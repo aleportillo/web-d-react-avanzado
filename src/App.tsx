@@ -4,7 +4,6 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
 import { useState } from 'react'
-import { useData } from './hooks/useData'
 
 const schema = yup.object({
   userInput: yup
@@ -18,9 +17,6 @@ export const App = () => {
 
   const [response, setResponse] = useState('')
   const [loading, setLoading] = useState(false)
-  const { multiplicar } = useData()
-  
-  console.log(multiplicar(5))
 
   const handlePregunta = async (data:{ userInput: string }) => {
     console.log(data)
