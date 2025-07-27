@@ -27,7 +27,11 @@ interface ChatProviderProps {
 
 // ------- CONTEXT
 
-export const ChatContext = createContext<ChatContextType | undefined>(undefined)
+// eslint-disable-next-line react-refresh/only-export-components
+export const ChatContext = createContext<ChatContextType>({
+  state: { messages: [], loading: false },
+  dispatch: () => {}
+})
 
 const initialState = {
   messages: [],
@@ -47,10 +51,7 @@ const chatReducer = (
       return state
   }
 }
-//   const [, dispatch] = useReducer(chatReducer, initialState)
 
-// dispatch({ type: 'ADD_MESSAGE', payload: { from: 'user', text: userPrompt } })
-// dispatch({ type: 'ADD_MESSAGE', payload: { from: 'bot', text: res.data.response } })
 export const ChatProvider = ({ children }: ChatProviderProps) => {
   const [state, dispatch] = useReducer(chatReducer, initialState)
 
