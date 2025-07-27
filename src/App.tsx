@@ -3,7 +3,7 @@ import './index.css'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
-import { useState } from 'react'
+import { useReducer, useState } from 'react'
 
 const schema = yup.object({
   userInput: yup
@@ -21,19 +21,6 @@ export const App = () => {
   const handlePregunta = async (data:{ userInput: string }) => {
     console.log(data)
     setLoading(true)
-    try {
-      const res = await axios.post('http://localhost:11434/api/generate', {
-        model: 'llama2',
-        prompt: `${data.userInput}`,
-        stream: false
-      })
-      console.log(res.data.response)
-      setResponse(res.data.response)
-    } catch (error) {
-      console.error('Error', error)
-    } finally {
-      setLoading(false)
-    }
   }
 
   return (
@@ -46,8 +33,20 @@ export const App = () => {
         {errors.userInput && <p>{errors.userInput.message}</p>}
         <button className='w-full py-2 rounded transition cursor-pointer bg-blue-600 text-white hover:bg-blue-700'> Preguntar </button>
       </form>
-      <div>
+      {/* <div>
         <p> {loading ? 'Generando respuesta' : response} </p>
+      </div> */}
+      <div>
+        {state.messages.map((msg, index) => {
+          return (
+            <p key={index}>
+              <b>
+                {msg.from === 'user' ? 'Tú' : 'Bot'}:
+              </b>
+              {msg.text}
+            </p>
+          )
+        })}
       </div>
     </>
   )
