@@ -1,63 +1,85 @@
-require('dotenv').config()
+import express from 'express'
+import dotenv from 'dotenv'
+import fs from 'fs'
 
-const express = require('express')
-
-const { infoPeliculas } = require('./peliculas')
+dotenv.config()
 
 const app = express()
 
 const PORT = process.env.PORT
 
+const readData = () => {
+  try {
+    const data = fs.readFileSync('./src/db.json')
+    return JSON.parse(data)
+  } catch (error) {
+    console.error('readData', error)
+  }
+}
+
+const writeData = (data) => {
+  try {
+    fs.writeFileSync('./src/db.json', JSON.stringify(data))
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+readData()
+
 app.get('/', (req, res) => {
   res.send('Hola mundo')
 })
 
-app.get('/segundaruta', (req, res) => {
-  res.send('Hola desde la segunda ruta')
+app.get('/peliculas', (req, res) => {
+  const data = readData()
+  res.status(200).json(data)
 })
 
-app.get('/api/peliculas', (req, res) => {
-  res.send(infoPeliculas)
-})
+app.get('/peliculas/:id', (req, res) => {
+  const movieId = parseInt(req.params.id)
+  const data = readData()
 
-app.get('/api/peliculas/accion/:titulo/:year', (req, res) => {
-  const { year, titulo } = req.params
+  const result = [...data.accion, ...data.drama].find(m => m.id === movieId)
 
-  const response = infoPeliculas.accion.filter(p => p.titulo === titulo && p.year === Number(year))
-
-  if (!response.length) {
-    res.status(400).send(`No se encuentran resultados con: ${titulo}, ${year}`)
-    return
-  }
-
-  res.send(response)
-})
-
-app.get('/api/peliculas/comedia/:pais', (req, res) => {
-  const { ordenar } = req.query
-  const { pais } = req.params
-
-  const resultados = infoPeliculas.comedia.filter(p => p.pais === pais)
-
-  if (ordenar === 'year') {
-    res.send(resultados.sort((a, b) => b.year - a.year))
-  }
-
-  res.send(resultados)
+  res.status(200).json(result)
 })
 
 app.use(express.json())
-app.post('/api/peliculas', (req, res) => {
-  const nuevaPelicula = req.body
+app.post('/peliculas', (req, res) => {
+  const data = readData()
+  const body = req.body
+  const newMovie = {
+    id: data.accion.length + 1,
+    ...body
+  }
+  data.accion.push(newMovie)
+  writeData(data)
+  res.json(newMovie)
+})
 
-  console.log(nuevaPelicula)
+app.put('/peliculas/:id', (req, res) => {
+  const data = readData()
+  const id = parseInt(req.params.id)
+  const body = req.body
+  const peliculaIndex = data.accion.findIndex(movie => movie.id === id)
+  data.accion[peliculaIndex] = {
+    ...data.accion[peliculaIndex],
+    ...body
+  }
+  writeData(data)
+  res.json({ message: 'Pelicula actualizada correctamente' })
+})
 
-  res.status(200).send({
-    mensaje: 'La pelicula se recibio con exito',
-    datos: nuevaPelicula
-  })
+app.delete('/peliculas/:id', (req, res) => {
+  const data = readData()
+  const id = parseInt(req.params.id)
+  const peliculaIndex = data.accion.findIndex(movie => movie.id === id)
+  data.accion.splice(peliculaIndex, 1)
+  writeData(data)
+  res.json({ message: 'Pelicula eliminada correctamente' })
 })
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`)
+  console.log('Servidor corriendo en puerto', PORT)
 })
