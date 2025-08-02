@@ -1,10 +1,11 @@
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { ChatContext } from '../context/ChatContext'
 import { useOllama } from '../hooks/useOllama'
 import '../ChatBot.css'
+import axios from 'axios'
 
 const schema = yup.object({
   userInput: yup
@@ -19,6 +20,26 @@ export const ChatBot = () => {
   const { state, dispatch } = useContext(ChatContext)
 
   const { sendMessage } = useOllama()
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await axios.get('http://localhost:3001/api/messages')
+        res.data.forEach((m: { sender: string; text: string }) => {
+          dispatch({
+            type: 'ADD_MESSAGE',
+            payload: {
+              from: m.sender === 'user' ? 'user' : 'bot',
+              text: m.text
+            }
+          })
+        })
+      } catch (error) {
+        console.error('Error al cargar el mensaje', error)
+      }
+    }
+    fetchMessages()
+  }, [dispatch])
 
   const handlePregunta = async (data:{ userInput: string }) => {
     reset({ userInput: '' })

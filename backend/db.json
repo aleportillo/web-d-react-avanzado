@@ -1,0 +1,16 @@
+{
+  "messages": [
+    {
+      "id": 1753842368542,
+      "text": "Hola mundo",
+      "sender": "user",
+      "timestamp": "2025-07-30T02:26:08.542Z"
+    },
+    {
+      "id": 1753842368542,
+      "text": "Hola bot",
+      "sender": "bot",
+      "timestamp": "2025-07-30T02:26:08.542Z"
+    }
+  ]
+}

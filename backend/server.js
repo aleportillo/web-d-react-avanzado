@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { generateFromOllama } from './ollamaService.js'
+import db from './db.js'
 
 const app = express()
 const PORT = 3001
@@ -22,6 +23,32 @@ app.post('/api/chat', async (req, res) => {
     console.error(err)
     res.status(500).json({ error: 'Error procesando la solicitud' })
   }
+})
+
+// GET: Obtener mensajes
+app.get('/api/messages', async (req, res) => {
+  await db.read()
+  res.json(db.data.messages)
+})
+
+app.post('/api/messages', async (req, res) => {
+  const { text, sender } = req.body
+  if (!text || !sender) {
+    return res.status(400).json({ error: 'Faltan campos en el objeto' })
+  }
+
+  const newMessage = {
+    id: Date.now(),
+    text,
+    sender,
+    timestamp: new Date().toISOString()
+  }
+
+  await db.read()
+  db.data.messages.push(newMessage)
+  await db.write()
+
+  res.status(201).json(newMessage)
 })
 
 app.listen(PORT, () => {
