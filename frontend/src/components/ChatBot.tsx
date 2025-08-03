@@ -47,8 +47,16 @@ export const ChatBot = () => {
     dispatch({ type: 'SET_LOADING', payload: true })
 
     try {
+      await axios.post('http://localhost:3001/api/messages', {
+        sender: 'user',
+        text: data.userInput
+      })
       const res = await sendMessage(data.userInput)
       dispatch({ type: 'ADD_MESSAGE', payload: { from: 'bot', text: res?.data.response } })
+      await axios.post('http://localhost:3001/api/messages', {
+        sender: 'bot',
+        text: res?.data.response
+      })
     } catch (error) {
       console.log(error)
     } finally {

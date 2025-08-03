@@ -11,6 +11,30 @@
       "text": "Hola bot",
       "sender": "bot",
       "timestamp": "2025-07-30T02:26:08.542Z"
+    },
+    {
+      "id": 1754199463221,
+      "text": "hola, de nuevo, como estas?",
+      "sender": "user",
+      "timestamp": "2025-08-03T05:37:43.221Z"
+    },
+    {
+      "id": 1754199496769,
+      "text": "hola?",
+      "sender": "user",
+      "timestamp": "2025-08-03T05:38:16.769Z"
+    },
+    {
+      "id": 1754199809136,
+      "text": "hola c:",
+      "sender": "user",
+      "timestamp": "2025-08-03T05:43:29.136Z"
+    },
+    {
+      "id": 1754199828976,
+      "text": "Hola! :D *waves* How are you today?",
+      "sender": "bot",
+      "timestamp": "2025-08-03T05:43:48.976Z"
     }
   ]
 }
